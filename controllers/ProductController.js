@@ -1,9 +1,10 @@
 import product from '../models/Product.js';
-import category from '../models/Category.js'
+import category from '../models/Category.js';
+import mongoose from 'mongoose';
 
 const index = async (req, res) =>{
     try{
-        const products = await product.find();
+        const products = await product.find({status: 'active'});
 
         if (!products) {
             throw{
@@ -51,20 +52,28 @@ const store = async (req, res) => {
             }
         }
 
-        // const productExist = await product.findOne({ title: req.body.title});
-        // if (productExist) {
-        //     throw{
-        //         code:428,
-        //         message:"PRODUCT_IS_EXIST"
-        //     }
-        // }
-        // const categoryExist = await category.findOne({ _id: req.body.categoryId});
-        // if (!categoryExist) {
-        //     throw{
-        //         code:428,
-        //         message:"PRODUCT_IS_NOT_EXIST"
-        //     }
-        // }
+        const productExist = await product.findOne({ title: req.body.title});
+        if (productExist) {
+            throw{
+                code:428,
+                message:"PRODUCT_IS_EXIST"
+            }
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(req.body.categoryId)) {
+            throw {
+                code:500,
+                message:"CATEGORYID_INVALID"
+            }
+        }
+
+        const categoryExist = await category.findOne({ _id: req.body.categoryId});
+        if (!categoryExist) {
+            throw{
+                code:428,
+                message:"CATEGORY_IS_NOT_EXIST"
+            }
+        }
         
 
         const title = req.body.title;
