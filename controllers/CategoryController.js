@@ -33,17 +33,16 @@ const store = async (req, res) => {
             }
         }
 
-    // const categoryExist = await category.findOne({title: req.body.title});
-    // if (categoryExist) {
-    //     throw{
-    //         code: 428,
-    //         message: " CATEGORY_IS_EXISTED"
-    //     }
-    // }
-    const title = req.body.title;
+    const categoryExist = await category.findOne({title: req.body.title});
+    if (categoryExist) {
+        throw{
+            code: 428,
+            message: " CATEGORY_IS_EXISTED"
+        }
+    }
 
     const newCategory = new category({
-        title: title,
+        title: req.body.title,
     });
     const Category = await newCategory.save();
 
